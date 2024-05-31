@@ -26,6 +26,7 @@ function main () {
 
 function getPlaces () {
   const PLACES_URL = `http://${HOST}:5001/api/v1/places_search/`;
+  const amenityObj = {}
   $.ajax({
     url: PLACES_URL,
     type: 'POST',
@@ -56,4 +57,3 @@ function getPlaces () {
     }
   });
 }
-
