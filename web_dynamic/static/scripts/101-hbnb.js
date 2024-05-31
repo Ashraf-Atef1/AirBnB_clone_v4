@@ -98,13 +98,16 @@ function searchPlaces() {
     });
 }
 
-function renderPlaces(response) {
+async function renderPlaces(response) {
   const $placesSection = $("SECTION.places").empty();
-  const articles = response.map((place) => createPlaceArticle(place));
+  const articles = await response.map(async (place) => await createPlaceArticle(place));
   $placesSection.append(articles.join(""));
 }
 
-function createPlaceArticle(place) {
+async function createPlaceArticle(place) {
+  let placeLength = await fetchReviews(place.id).done((data) => {
+    return data.length;
+  });
   return `
     <article>
       <div class="title_box">
@@ -119,8 +122,8 @@ function createPlaceArticle(place) {
       <div class="description">${place.description}</div>
       <div class="reviews">
         <h2>
-          <span id="${place.id}n" class="treview">Reviews</span>
-          <span id="${place.id}" class="toggle-reviews">Show</span>
+        <span id="${place.id}" class="toggle-reviews no-select">Show</span>
+          <span id="${place.id}n" class="treview">${placeLength} Reviews</span>
         </h2>
         <ul id="${place.id}r"></ul>
       </div>
@@ -143,17 +146,17 @@ $(document).on("click", ".toggle-reviews", function () {
 function toggleReviews(toggleButton, placeId) {
   const $reviewsContainer = $(`#${placeId}r`);
 
+  fetchReviews(placeId).done((data) => {
   if (toggleButton.textContent === "Show") {
     toggleButton.textContent = "Hide";
-    fetchReviews(placeId).done((data) => {
       $(`#${placeId}n`).text(`${data.length} Reviews`);
       data.forEach((review) => appendReview(review, placeId));
-    });
-  } else {
-    toggleButton.textContent = "Show";
-    $(`#${placeId}n`).text("Reviews");
-    $reviewsContainer.empty();
-  }
+    } else {
+      toggleButton.textContent = "Show";
+      $(`#${placeId}n`).text(`${data.length} Reviews`);
+      $reviewsContainer.empty();
+    }
+  });
 }
 
 function fetchReviews(placeId) {
