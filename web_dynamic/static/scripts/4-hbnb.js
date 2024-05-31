@@ -21,12 +21,14 @@ function main () {
       $('#api_status').removeClass('available');
     }
   });
+  $("button").click = getPlaces;
   getPlaces();
 }
 
 function getPlaces () {
   const PLACES_URL = `http://${HOST}:5001/api/v1/places_search/`;
   const amenityObj = {}
+  $('SECTION.places').empty();
   $.ajax({
     url: PLACES_URL,
     type: 'POST',
