@@ -100,7 +100,11 @@ function searchPlaces() {
 
 async function renderPlaces(response) {
   const $placesSection = $("SECTION.places").empty();
-  const articles = await response.map(async (place) => await createPlaceArticle(place));
+  const articles = []
+  for (const place of response) {
+    const article = await createPlaceArticle(place);
+    articles.push(article);
+  }
   $placesSection.append(articles.join(""));
 }
 
