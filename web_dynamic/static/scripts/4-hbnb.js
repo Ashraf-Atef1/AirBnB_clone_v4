@@ -1,9 +1,8 @@
 $(document).ready(main);
 
 const HOST = "0.0.0.0";
-
+const amenityObj = {};
 function main() {
-  const amenityObj = {};
   $(".amenities .popover input").change(function () {
     if ($(this).is(":checked")) {
       amenityObj[$(this).attr("data-name")] = $(this).attr("data-id");
@@ -26,7 +25,6 @@ function main() {
 
 function searchPlacesAmenities() {
   const PLACES_URL = `http://${HOST}:5001/api/v1/places_search/`;
-  const amenityObj = {};
   $.ajax({
     url: PLACES_URL,
     type: "POST",
