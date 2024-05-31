@@ -8,6 +8,7 @@ header {
     align-items: center;
     justify-content: space-between;
 }
+
 header .logo {
     background: url("../images/logo.png") no-repeat;
     left: 20px;
