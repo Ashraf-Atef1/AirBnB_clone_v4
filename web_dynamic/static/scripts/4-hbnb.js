@@ -33,6 +33,7 @@ function getPlaces () {
     headers: { 'Content-Type': 'application/json' },
     data: JSON.stringify({ amenities: Object.values(amenityObj) }),
     success: function (response) {
+      console.log(response);
       $('SECTION.places').empty();
       for (const r of response) {
         const article = ['<article>',
