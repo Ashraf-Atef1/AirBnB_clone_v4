@@ -1,101 +1,107 @@
 $(document).ready(init);
 
-const HOST = '0.0.0.0';
+const HOST = "0.0.0.0";
 const amenityObj = {};
 const stateObj = {};
 const cityObj = {};
 let obj = {};
 let debounceTimeout;
 
-function init () {
-  $('.amenities .popover input').change(debounce(() => { 
-    obj = amenityObj; 
-    checkedObjects.call(this, 1); 
-  }, 300));
+function init() {
+  $(".amenities .popover input").change(
+    debounce(() => {
+      obj = amenityObj;
+      checkedObjects.call(this, 1);
+    }, 300)
+  );
 
-  $('.state_input').change(debounce(() => { 
-    obj = stateObj; 
-    checkedObjects.call(this, 2); 
-  }, 300));
+  $(".state_input").change(
+    debounce(() => {
+      obj = stateObj;
+      checkedObjects.call(this, 2);
+    }, 300)
+  );
 
-  $('.city_input').change(debounce(() => { 
-    obj = cityObj; 
-    checkedObjects.call(this, 3); 
-  }, 300));
+  $(".city_input").change(
+    debounce(() => {
+      obj = cityObj;
+      checkedObjects.call(this, 3);
+    }, 300)
+  );
 
   apiStatus();
   searchPlaces();
 }
 
-function debounce (func, wait) {
-  return function(...args) {
+function debounce(func, wait) {
+  return function (...args) {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
 
-function checkedObjects (nObject) {
-  if ($(this).is(':checked')) {
-    obj[$(this).attr('data-name')] = $(this).attr('data-id');
+function checkedObjects(nObject) {
+  if ($(this).is(":checked")) {
+    obj[$(this).attr("data-name")] = $(this).attr("data-id");
   } else {
-    delete obj[$(this).attr('data-name')];
+    delete obj[$(this).attr("data-name")];
   }
   updateSelectedFilters(nObject);
   searchPlaces();
 }
 
-function updateSelectedFilters (nObject) {
-  const names = Object.keys(obj).sort().join(', ');
+function updateSelectedFilters(nObject) {
+  const names = Object.keys(obj).sort().join(", ");
   if (nObject === 1) {
-    $('.amenities h4').text(names);
+    $(".amenities h4").text(names);
   } else if (nObject === 2) {
-    $('.locations h4').text(names);
+    $(".locations h4").text(names);
   }
 }
 
-function apiStatus () {
+function apiStatus() {
   const API_URL = `http://${HOST}:5001/api/v1/status/`;
   $.get(API_URL)
     .done((data) => {
-      if (data.status === 'OK') {
-        $('#api_status').addClass('available');
+      if (data.status === "OK") {
+        $("#api_status").addClass("available");
       } else {
-        $('#api_status').removeClass('available');
+        $("#api_status").removeClass("available");
       }
     })
     .fail(() => {
-      $('#api_status').removeClass('available');
+      $("#api_status").removeClass("available");
     });
 }
 
-function searchPlaces () {
+function searchPlaces() {
   const PLACES_URL = `http://${HOST}:5001/api/v1/places_search/`;
   showLoadingIndicator(true);
 
   $.ajax({
     url: PLACES_URL,
-    type: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    type: "POST",
+    headers: { "Content-Type": "application/json" },
     data: JSON.stringify({
       amenities: Object.values(amenityObj),
       states: Object.values(stateObj),
-      cities: Object.values(cityObj)
+      cities: Object.values(cityObj),
+    }),
+  })
+    .done(renderPlaces)
+    .fail((error) => {
+      console.error(error);
+      alert("An error occurred while searching for places.");
     })
-  })
-  .done(renderPlaces)
-  .fail((error) => {
-    console.error(error);
-    alert('An error occurred while searching for places.');
-  })
-  .always(() => {
-    showLoadingIndicator(false);
-  });
+    .always(() => {
+      showLoadingIndicator(false);
+    });
 }
 
 function renderPlaces(response) {
-  const $placesSection = $('SECTION.places').empty();
+  const $placesSection = $("SECTION.places").empty();
   const articles = response.map((place) => createPlaceArticle(place));
-  $placesSection.append(articles.join(''));
+  $placesSection.append(articles.join(""));
 }
 
 function createPlaceArticle(place) {
@@ -123,13 +129,13 @@ function createPlaceArticle(place) {
 
 function showLoadingIndicator(show) {
   if (show) {
-    $('#loading-indicator').show();
+    $("#loading-indicator").show();
   } else {
-    $('#loading-indicator').hide();
+    $("#loading-indicator").hide();
   }
 }
 
-$(document).on('click', '.toggle-reviews', function () {
+$(document).on("click", ".toggle-reviews", function () {
   const placeId = this.id;
   toggleReviews(this, placeId);
 });
@@ -137,16 +143,15 @@ $(document).on('click', '.toggle-reviews', function () {
 function toggleReviews(toggleButton, placeId) {
   const $reviewsContainer = $(`#${placeId}r`);
 
-  if (toggleButton.textContent === 'Show') {
-    toggleButton.textContent = 'Hide';
-    fetchReviews(placeId)
-      .done((data) => {
-        $(`#${placeId}n`).text(`${data.length} Reviews`);
-        data.forEach((review) => appendReview(review, placeId));
-      });
+  if (toggleButton.textContent === "Show") {
+    toggleButton.textContent = "Hide";
+    fetchReviews(placeId).done((data) => {
+      $(`#${placeId}n`).text(`${data.length} Reviews`);
+      data.forEach((review) => appendReview(review, placeId));
+    });
   } else {
-    toggleButton.textContent = 'Show';
-    $(`#${placeId}n`).text('Reviews');
+    toggleButton.textContent = "Show";
+    $(`#${placeId}n`).text("Reviews");
     $reviewsContainer.empty();
   }
 }
@@ -157,24 +162,26 @@ function fetchReviews(placeId) {
 
 function appendReview(review, placeId) {
   const date = new Date(review.created_at);
-  const formattedDate = `${dateOrdinal(date.getDate())} ${date.toLocaleString('en', { month: 'long' })} ${date.getFullYear()}`;
-  
-  fetchUser(review.user_id)
-    .done((user) => {
-      const reviewHtml = `
+  const formattedDate = `${dateOrdinal(date.getDate())} ${date.toLocaleString(
+    "en",
+    { month: "long" }
+  )} ${date.getFullYear()}`;
+
+  fetchUser(review.user_id).done((user) => {
+    const reviewHtml = `
         <li>
           <h3>From ${user.first_name} ${user.last_name} the ${formattedDate}</h3>
           <p>${review.text}</p>
         </li>`;
-      $(`#${placeId}r`).append(reviewHtml);
-    });
+    $(`#${placeId}r`).append(reviewHtml);
+  });
 }
 
 function fetchUser(userId) {
   return $.get(`http://${HOST}:5001/api/v1/users/${userId}`);
 }
 
-function dateOrdinal (dom) {
+function dateOrdinal(dom) {
   if ([1, 21, 31].includes(dom)) return `${dom}st`;
   if ([2, 22].includes(dom)) return `${dom}nd`;
   if ([3, 23].includes(dom)) return `${dom}rd`;
