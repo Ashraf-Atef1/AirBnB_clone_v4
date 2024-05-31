@@ -98,13 +98,13 @@ function searchPlaces() {
     });
 }
 
-async function renderPlaces(response) {
+function renderPlaces(response) {
   const $placesSection = $("SECTION.places").empty();
   const articles = []
-  for (const place of response) {
+  response.forEach(async (place) => {
     const article = await createPlaceArticle(place);
     articles.push(article);
-  }
+  });
   $placesSection.append(articles.join(""));
 }
 
