@@ -77,7 +77,6 @@ function apiStatus() {
 function searchPlaces() {
   const PLACES_URL = `http://${HOST}:5001/api/v1/places_search/`;
   showLoadingIndicator(true);
-
   $.ajax({
     url: PLACES_URL,
     type: "POST",
@@ -100,18 +99,14 @@ function searchPlaces() {
 
 function renderPlaces(response) {
   const $placesSection = $("SECTION.places").empty();
-  const articles = []
   response.forEach(async (place) => {
     const article = await createPlaceArticle(place);
-    articles.push(article);
+    $placesSection.append(article);
   });
-  $placesSection.append(articles.join(""));
 }
 
 async function createPlaceArticle(place) {
-  let placeLength = await fetchReviews(place.id).done((data) => {
-    return data.length;
-  });
+  let placeLength = await fetchReviews(place.id);
   return `
     <article>
       <div class="title_box">
@@ -127,7 +122,7 @@ async function createPlaceArticle(place) {
       <div class="reviews">
         <h2>
         <span id="${place.id}" class="toggle-reviews no-select">Show</span>
-          <span id="${place.id}n" class="treview">${placeLength} Reviews</span>
+          <span id="${place.id}n" class="treview">${placeLength.length} Reviews</span>
         </h2>
         <ul id="${place.id}r"></ul>
       </div>
