@@ -1,6 +1,6 @@
 $(document).ready(init);
 
-const HOST = "0.0.0.0";
+const HOST = "https://hbnb-api.ashrafatef.tech";
 const amenityObj = {};
 const stateObj = {};
 const cityObj = {};
@@ -38,7 +38,7 @@ function checkedObjects(nObject) {
 }
 
 function apiStatus() {
-  const API_URL = `http://${HOST}:5001/api/v1/status/`;
+  const API_URL = `${HOST}/api/v1/status/`;
   $.get(API_URL, (data, textStatus) => {
     if (textStatus === "success" && data.status === "OK") {
       $("#api_status").addClass("available");
@@ -49,7 +49,7 @@ function apiStatus() {
 }
 
 function searchPlaces() {
-  const PLACES_URL = `http://${HOST}:5001/api/v1/places_search/`;
+  const PLACES_URL = `${HOST}/api/v1/places_search/`;
   $.ajax({
     url: PLACES_URL,
     type: "POST",
